@@ -48,6 +48,25 @@ If you only work on one of the graphs, set just that prefix. Any unconfigured se
 
 > **Note:** The plugin pins `fastmcp<3` to avoid a known incompatibility with `mcp-neo4j-cypher`.
 
+### Supabase (application database)
+
+The plugin registers **two** project-scoped Supabase MCP servers; both authenticate with a
+single personal access token via a Bearer header (the hosted MCP's OAuth needs org-admin
+approval, so we use a PAT):
+
+```bash
+# Supabase PAT — dashboard → Account → Access Tokens → Generate new token
+export SUPABASE_ACCESS_TOKEN="sbp_..."
+```
+
+| Server | Project | Use |
+|--------|---------|-----|
+| `supabase-dev` | dev/staging `qbdyiyoaleuppddcsaxk` | **writable** — author migrations, schema, RLS |
+| `supabase-prod` | prod `nwhtkmaujbrhwjbesixt` | **reads/debug only** — ⚠️ writable, but never author schema (goes via `horison-migrations` → gated `push-prod`) |
+
+Each server's URL `project_ref` scopes which project it reaches. See the **`supabase-mcp`**
+skill for the authoring workflow.
+
 ### Langfuse (prompt management)
 
 ```bash
@@ -86,7 +105,6 @@ See the **`horison-mcp`** skill for the full run-locally and add-a-tool workflow
 
 | Server | Auth |
 |--------|------|
-| **Supabase** | OAuth in browser on first use |
 | **Langfuse Docs** | No auth required |
 | **Context7** | No auth required |
 | **Playwright** | No auth required |

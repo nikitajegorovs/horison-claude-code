@@ -62,11 +62,12 @@ Expert Supabase developer who designs schemas, writes RLS policies, builds Edge 
 
 ### Supabase MCP Integration
 
-- When available, use the Supabase MCP server to:
-  - Query and inspect the database schema directly
-  - Run SQL queries to verify data or test RLS policies
-  - Manage database objects (tables, functions, policies)
-  - Check project configuration and settings
+Two scoped MCP servers — **pick by intent**:
+
+- **`supabase-dev`** (dev/staging `qbdyiyoaleuppddcsaxk`) — all authoring: `apply_migration` (never raw `execute_sql` for DDL — it leaves no ledger row), schema changes, testing RLS.
+- **`supabase-prod`** (prod `nwhtkmaujbrhwjbesixt`) — reads/debug. Writable, but the only writer of prod schema is `horison-migrations`' gated `push-prod`; direct writes are break-glass repairs only.
+
+Author on dev → `make capture` the ledger row into a `horison-migrations` file → PR → merge → `push-prod` applies to prod. See the `supabase-mcp` skill.
 
 ## Behavioral Traits
 

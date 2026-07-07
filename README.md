@@ -2,7 +2,7 @@
 
 A curated plugin marketplace for [Claude Code](https://claude.com/claude-code) built around the Horison PE deal intelligence stack — GCP, Supabase, Neo4j Aura, and Langfuse.
 
-One install gives you **12 MCP servers**, **10 specialized agents**, **11 skills**, and **20 optional plugin packs** covering Python, TypeScript, infrastructure, data engineering, and more.
+One install gives you **13 MCP servers**, **10 specialized agents**, **11 skills**, and **20 optional plugin packs** covering Python, TypeScript, infrastructure, data engineering, and more.
 
 ## Quick Start
 
@@ -13,13 +13,16 @@ One install gives you **12 MCP servers**, **10 specialized agents**, **11 skills
 /plugin install horison-defaults@horison-claude-code
 ```
 
-This gives you 12 MCP servers, 10 agents, and 11 skills. Servers that need no env-var setup (Supabase, Playwright, Context7, Memory, Serena, Langfuse Docs, and both **horison-prod** / **horison-dev**) work out of the box — the Horison servers authenticate via browser OAuth. Only Neo4j and Langfuse need environment variables — see below.
+This gives you 13 MCP servers, 10 agents, and 11 skills. Servers that need no env-var setup (Playwright, Context7, Memory, Serena, Langfuse Docs, and both **horison-prod** / **horison-dev**) work out of the box — the Horison servers authenticate via browser OAuth. **Supabase** (a `SUPABASE_ACCESS_TOKEN` PAT), **Neo4j**, and **Langfuse** need environment variables — see below.
 
 ### 2. Set environment variables
 
 Add these to your shell profile (`~/.zshrc` or `~/.bashrc`):
 
 ```bash
+# Supabase PAT (dashboard → Account → Access Tokens) — authenticates both supabase-dev and supabase-prod.
+export SUPABASE_ACCESS_TOKEN="sbp_..."
+
 # Neo4j — find URI in Aura Console → instance → Connect
 export NEO4J_URI="neo4j+s://xxxxxxxx.databases.neo4j.io"
 export NEO4J_USERNAME="neo4j"
@@ -59,11 +62,12 @@ Restart Claude Code and run `/mcp` to verify all servers are connected. Servers 
 
 ## What's in `horison-defaults`
 
-### MCP Servers (12)
+### MCP Servers (13)
 
 | Server | Type | Auth | Purpose |
 |--------|------|------|---------|
-| **Supabase** | HTTP | OAuth (browser) | Query Postgres, manage auth, storage, edge functions |
+| **Supabase Dev** | HTTP | PAT (`SUPABASE_ACCESS_TOKEN`) | **Writable** — author against dev/staging (`qbdyiyoaleuppddcsaxk`): migrations, schema, RLS |
+| **Supabase Prod** | HTTP | PAT (`SUPABASE_ACCESS_TOKEN`) | Reads/debug against prod (`nwhtkmaujbrhwjbesixt`) — writable, but schema is authored via `horison-migrations` |
 | **Horison Prod** | HTTP | OAuth (browser) | 17 read-only deal / KG / vault tools against production (`mcp.horison.ai`) |
 | **Horison Dev** | HTTP | OAuth (browser) | Same tools against a locally-run server (`localhost:8010`) — for tool development |
 | **Neo4j ×3** | stdio (`uvx`) | Env vars | Cypher against the `prod` / `dev` / `ta` Neo4j Aura graphs |
@@ -168,7 +172,7 @@ horison-claude-code/
 ├── plugins/
 │   ├── horison-defaults/      # Core plugin (MCP + agents + skills)
 │   │   ├── .claude-plugin/plugin.json
-│   │   ├── .mcp.json          # 12 MCP server configs
+│   │   ├── .mcp.json          # 13 MCP server configs
 │   │   ├── agents/            # 10 agent definitions
 │   │   └── skills/            # 11 skill guides
 │   ├── python-development/

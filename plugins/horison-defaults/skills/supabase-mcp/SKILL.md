@@ -5,9 +5,24 @@ description: How to use the Supabase MCP server tools effectively. Activated whe
 
 # Using the Supabase MCP Server
 
-The Supabase MCP server gives Claude direct access to your Supabase project. Auth is via OAuth (browser popup on first use).
+Claude reaches Supabase through **two** scoped MCP servers (both authenticate with your `SUPABASE_ACCESS_TOKEN` PAT via a Bearer header — no per-session OAuth):
+
+| Server | Project | Use it for |
+|---|---|---|
+| **`supabase-dev`** | dev/staging `qbdyiyoaleuppddcsaxk` | authoring — `apply_migration`, `execute_sql`, all schema work |
+| **`supabase-prod`** | prod `nwhtkmaujbrhwjbesixt` | **reads/debug only** — inspect schema/data, `list_migrations` |
+
+**Author on `supabase-dev`, read on `supabase-prod`.** `supabase-prod` is writable but not the place to author — the only writer of prod schema is `horison-migrations`' gated `push-prod`. The loop:
+
+1. Author on `supabase-dev` via `apply_migration` (never raw `execute_sql` for DDL — it leaves no ledger row, so capture can't see it).
+2. `make capture` the ledger row into a `horison-migrations` file → PR → merge → gated `push-prod` applies it to prod.
+3. Reads on `supabase-prod` are always fine.
+
+Direct prod writes are break-glass only — a reviewed ledger/schema repair that can't go through the pipeline. See `horison-migrations`' `CLAUDE.md`.
 
 ## Available Tool Patterns
+
+Tools are prefixed per server (`mcp__…supabase-dev__*` / `mcp__…supabase-prod__*`) — pick by intent.
 
 ### Query the database
 ```

@@ -1,7 +1,17 @@
 {
-  "supabase": {
+  "supabase-prod": {
     "type": "http",
-    "url": "https://mcp.supabase.com/mcp"
+    "url": "https://mcp.supabase.com/mcp?project_ref=nwhtkmaujbrhwjbesixt",
+    "headers": {
+      "Authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
+    }
+  },
+  "supabase-dev": {
+    "type": "http",
+    "url": "https://mcp.supabase.com/mcp?project_ref=qbdyiyoaleuppddcsaxk",
+    "headers": {
+      "Authorization": "Bearer ${SUPABASE_ACCESS_TOKEN}"
+    }
   },
   "horison-dev": {
     "type": "http",
