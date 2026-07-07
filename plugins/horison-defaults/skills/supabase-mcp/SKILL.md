@@ -18,6 +18,10 @@ Claude reaches Supabase through **two** scoped MCP servers (both authenticate wi
 2. `make capture` the ledger row into a `horison-migrations` file → PR → merge → gated `push-prod` applies it to prod.
 3. Reads on `supabase-prod` are always fine.
 
+The capture→PR half runs in the `horison-migrations` repo (`make status` / `capture` / `check`, PAT-only) — do it yourself or hand it to your coding agent; the targets are identical either way. Whoever runs it, eyeball the generated SQL before the PR: correct final shape, additive-only (expand-contract), no stray drift.
+
+> ⚠️ **Staging is shared — scope your capture.** The ledger can hold other devs' in-flight rows, and a bare `make capture` files *all* of them, sweeping another feature's migrations into your PR. `apply_migration` returns the exact version of each row you authored, so capture only those: `make capture ONLY=<v1,v2>` (or `SINCE=<last-repo-version>`). A bare `make capture` is fine only when you're the sole author in flight. Either way, `make status` first and confirm every written file is yours before the PR.
+
 Direct prod writes are break-glass only — a reviewed ledger/schema repair that can't go through the pipeline. See `horison-migrations`' `CLAUDE.md`.
 
 ## Available Tool Patterns

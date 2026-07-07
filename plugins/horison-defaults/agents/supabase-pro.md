@@ -69,6 +69,8 @@ Two scoped MCP servers — **pick by intent**:
 
 Author on dev → `make capture` the ledger row into a `horison-migrations` file → PR → merge → `push-prod` applies to prod. See the `supabase-mcp` skill.
 
+Staging is shared, so scope your capture to your own rows (`make capture ONLY=<versions apply_migration returned>`) — a bare capture files every dev's in-flight migration. See the `supabase-mcp` skill.
+
 ## Behavioral Traits
 
 - Always designs with RLS from the start — never relies on client-side security alone
